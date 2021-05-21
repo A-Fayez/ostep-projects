@@ -45,7 +45,7 @@ void free_list(node_t *head) {
 
 int main(int argc, char *argv[]) {
   if (argc > 3) {
-    fprintf(stderr, "usage: reverse <input> <output>");
+    fprintf(stderr, "usage: reverse <input> <output>\n");
     exit(1);
   }
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     int _first = 1;
     FILE *istream = fopen(argv[1], "r");
     if (istream == NULL) {
-      fprintf(stderr, "error: cannot open file 'input.txt'");
+      fprintf(stderr, "reverse: cannot open file '%s'\n", argv[1]);
       exit(1);
     }
     while ((nread = getline(&line, &len, istream)) != -1) {
@@ -103,6 +103,46 @@ int main(int argc, char *argv[]) {
     }
     print_list(head, stdout);
     free(line);
+    fclose(istream);
+    exit(0);
+    break;
+
+  case 3:
+    if (strcmp(argv[1], argv[2]) == 0) {
+      fprintf(stderr, "reverse: input and output file must differ\n");
+      exit(1);
+    }
+    int __first = 1;
+    FILE *ifile;
+    FILE *ofile;
+
+    if ((ifile = fopen(argv[1], "r")) == NULL) {
+      fprintf(stderr, "reverse: cannot open file '%s'\n", argv[1]);
+      exit(1);
+    }
+
+    if ((ofile = fopen(argv[2], "w")) == NULL) {
+      fprintf(stderr, "reverse: cannot open file '%s'\n", argv[2]);
+      exit(1);
+    }
+
+    while ((nread = getline(&line, &len, ifile)) != -1) {
+      if (__first) {
+        if ((head->line = (char *)malloc(strlen(line) + 1)) == NULL) {
+          fprintf(stderr, "malloc failed\n");
+          exit(1);
+        }
+        strcpy(head->line, line);
+        head->next = NULL;
+        __first = 0;
+        continue;
+      }
+      push(head, line);
+    }
+    print_list(head, ofile);
+    free(line);
+    fclose(ifile);
+    fclose(ofile);
     exit(0);
     break;
   }

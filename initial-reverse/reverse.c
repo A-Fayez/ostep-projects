@@ -14,8 +14,14 @@ void push(node_t *head, char *line) {
     current = current->next;
   }
 
-  current->next = (node_t *)malloc(sizeof(node_t));
-  current->next->line = (char *)malloc(strlen(line) + 1);
+  if ((current->next = (node_t *)malloc(sizeof(node_t))) == NULL) {
+    fprintf(stderr, "malloc failed\n");
+    exit(1);
+  }
+  if ((current->next->line = (char *)malloc(strlen(line) + 1)) == NULL) {
+    fprintf(stderr, "malloc failed\n");
+    exit(1);
+  }
   strcpy(current->next->line, line);
   current->next->next = NULL;
 }
@@ -47,6 +53,10 @@ int main(int argc, char *argv[]) {
   size_t len = 0;
   ssize_t nread;
   node_t *head = (node_t *)malloc(sizeof(node_t));
+  if (head == NULL) {
+    fprintf(stderr, "malloc failed\n");
+    exit(1);
+  }
 
   switch (argc) {
     // no args, read from stdin
@@ -54,7 +64,10 @@ int main(int argc, char *argv[]) {
     int first = 1;
     while ((nread = getline(&line, &len, stdin)) != -1) {
       if (first) {
-        head->line = (char *)malloc(strlen(line) + 1);
+        if ((head->line = (char *)malloc(strlen(line) + 1)) == NULL) {
+          fprintf(stderr, "malloc failed\n");
+          exit(1);
+        }
         strcpy(head->line, line);
         head->next = NULL;
         first = 0;

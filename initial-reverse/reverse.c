@@ -53,6 +53,7 @@ int main(int argc, char *argv[]) {
   size_t len = 0;
   ssize_t nread;
   node_t *head = (node_t *)malloc(sizeof(node_t));
+
   if (head == NULL) {
     fprintf(stderr, "malloc failed\n");
     exit(1);
@@ -75,12 +76,37 @@ int main(int argc, char *argv[]) {
       }
       push(head, line);
     }
+    print_list(head, stdout);
     free(line);
+    exit(0);
+    break;
 
+  case 2:
+    int _first = 1;
+    FILE *istream = fopen(argv[1], "r");
+    if (istream == NULL) {
+      fprintf(stderr, "error: cannot open file 'input.txt'");
+      exit(1);
+    }
+    while ((nread = getline(&line, &len, istream)) != -1) {
+      if (_first) {
+        if ((head->line = (char *)malloc(strlen(line) + 1)) == NULL) {
+          fprintf(stderr, "malloc failed\n");
+          exit(1);
+        }
+        strcpy(head->line, line);
+        head->next = NULL;
+        _first = 0;
+        continue;
+      }
+      push(head, line);
+    }
+    print_list(head, stdout);
+    free(line);
+    exit(0);
     break;
   }
 
-  print_list(head, stdout);
   free_list(head);
   return 0;
 }

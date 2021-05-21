@@ -27,6 +27,16 @@ void print_list(node_t *head, FILE *stream) {
   fprintf(stream, head->line);
 }
 
+void free_list(node_t *head) {
+  node_t *current = NULL;
+
+  while ((current = head) != NULL) {
+    head = head->next;
+    free(current->line);
+    free(current);
+  }
+}
+
 int main(int argc, char *argv[]) {
   if (argc > 3) {
     fprintf(stderr, "usage: reverse <input> <output>");
@@ -37,6 +47,7 @@ int main(int argc, char *argv[]) {
   size_t len = 0;
   ssize_t nread;
   node_t *head = (node_t *)malloc(sizeof(node_t));
+
   switch (argc) {
     // no args, read from stdin
   case 1:
@@ -52,8 +63,11 @@ int main(int argc, char *argv[]) {
       push(head, line);
     }
     free(line);
+
     break;
   }
+
   print_list(head, stdout);
+  free_list(head);
   return 0;
 }
